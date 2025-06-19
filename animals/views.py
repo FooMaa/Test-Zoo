@@ -147,7 +147,7 @@ class AnimalUpdateView(UpdateView):
 class ProcedureCreateView(CreateView):
     form_class = ProcedureForm
     template_name = 'animals/procedure_form.html'
-    
+
     SESSION_KEY = 'procedure_create_processing_{animal_id}'
 
     def setup(self, request, *args, **kwargs):
