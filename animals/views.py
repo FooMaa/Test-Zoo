@@ -1,9 +1,8 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic import ListView, DetailView, CreateView, UpdateView
-from django.urls import reverse_lazy
 from rest_framework import viewsets, generics
 from rest_framework.response import Response
-from django.contrib import messages
+from django.http import HttpResponseRedirect, JsonResponse
 
 from .models import Animal, Procedure
 from .forms import AnimalForm, ProcedureForm
@@ -15,7 +14,7 @@ class AnimalListView(ListView):
     model = Animal
     template_name = 'animals/animal_list.html'
     context_object_name = 'animals'
-    paginate_by = 10
+    paginate_by = None
 
 
 class AnimalDetailView(DetailView):
@@ -33,23 +32,21 @@ class AnimalCreateView(CreateView):
     model = Animal
     form_class = AnimalForm
     template_name = 'animals/animal_form.html'
-    success_url = reverse_lazy('animal-list')
+    success_url = '/animals'
 
-    def form_valid(self, form):
-        response = super().form_valid(form)
-        messages.success(self.request, 'Животное успешно добавлено!')
-        return response
-
-    def form_invalid(self, form):
-        messages.error(self.request, 'Пожалуйста, исправьте ошибки в форме')
-        return super().form_invalid(form)
+    def post(self, request, *args, **kwargs):
+        if 'cancel' in request.POST:
+            return HttpResponseRedirect('/animals')
+        if 'application/json' in request.content_type:
+            return JsonResponse({'error': 'Use the API endpoint at /api/animals/'}, status=400)
+        return super().post(request, *args, **kwargs)
 
 
 class AnimalUpdateView(UpdateView):
     model = Animal
     form_class = AnimalForm
     template_name = 'animals/animal_form.html'
-    success_url = reverse_lazy('animal-list')
+    success_url = '/animals'
 
 
 def add_procedure(request, pk):
