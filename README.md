@@ -56,9 +56,10 @@ http POST http://127.0.0.1:8000/api/animals/ \
 
 # Обновить животное
 http PUT http://127.0.0.1:8000/api/animals/1/ \
-    name="Барсик (обновленный)" \
+    name="Барсик (Обновленный)" \
     species="Кошка" \
-    birth_date="2020-01-01"
+    birth_date="2020-01-01" \
+    section_id=1
 
 # Добавить процедуру
 http POST http://127.0.0.1:8000/api/api/animals/2/procedures/ \
