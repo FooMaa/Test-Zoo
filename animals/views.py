@@ -9,6 +9,10 @@ from .models import Animal, Procedure
 from .forms import AnimalForm, ProcedureForm
 from .serializers import AnimalSerializer, ProcedureSerializer
 
+from django.views.decorators.http import require_http_methods
+from django.utils.decorators import method_decorator
+from django.core.exceptions import PermissionDenied
+
 
 # Web views
 class AnimalListView(ListView):
@@ -25,7 +29,6 @@ class AnimalDetailView(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        print(f"Процедуры для животного {self.object.id}: {list(self.object.procedures.all())}")
         context['procedures'] = self.object.procedures.select_related('animal').order_by('-datetime')
         return context
 
@@ -38,18 +41,71 @@ class AnimalDetailView(DetailView):
         )
 
 
+# class AnimalCreateView(CreateView):
+#     model = Animal
+#     form_class = AnimalForm
+#     template_name = 'animals/animal_form.html'
+#     success_url = '/'
+# 
+#     def post(self, request, *args, **kwargs):
+#         if 'cancel' in request.POST:
+#             return HttpResponseRedirect('/')
+#         if 'application/json' in request.content_type:
+#             return JsonResponse({'error': 'Use the API endpoint at /api/animals/'}, status=400)
+#         return super().post(request, *args, **kwargs)
+
+@method_decorator(require_http_methods(["GET", "POST"]), name='dispatch')
 class AnimalCreateView(CreateView):
     model = Animal
     form_class = AnimalForm
     template_name = 'animals/animal_form.html'
     success_url = '/'
 
+    SESSION_KEY = 'animal_create_processing'
+
+    def dispatch(self, request, *args, **kwargs):
+        if request.method == 'POST' and request.session.get(self.SESSION_KEY):
+            raise PermissionDenied("Дублирующий запрос обнаружен")
+        return super().dispatch(request, *args, **kwargs)
+
     def post(self, request, *args, **kwargs):
         if 'cancel' in request.POST:
             return HttpResponseRedirect('/')
+
         if 'application/json' in request.content_type:
             return JsonResponse({'error': 'Use the API endpoint at /api/animals/'}, status=400)
-        return super().post(request, *args, **kwargs)
+        request.session[self.SESSION_KEY] = True
+        request.session.modified = True
+
+        try:
+            response = super().post(request, *args, **kwargs)
+            if self.object and self.object.pk:
+                duplicates = Animal.objects.filter(
+                    name=self.object.name,
+                    species=self.object.species,
+                    birth_date=self.object.birth_date
+                ).exclude(pk=self.object.pk)
+
+                if duplicates.exists():
+                    self.object.delete()
+                    return self.form_invalid(self.get_form())
+
+            return response
+        finally:
+            if self.SESSION_KEY in request.session:
+                del request.session[self.SESSION_KEY]
+                request.session.modified = True
+
+    def form_valid(self, form):
+        if Animal.objects.filter(
+                name=form.cleaned_data['name'],
+                species=form.cleaned_data['species'],
+                birth_date=form.cleaned_data.get('birth_date')
+        ).exists():
+            form.add_error(None, "Такое животное уже существует")
+            return self.form_invalid(form)
+
+        return super().form_valid(form)
 
 
 class AnimalUpdateView(UpdateView):
