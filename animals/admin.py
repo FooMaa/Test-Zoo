@@ -1,5 +1,6 @@
 from django.contrib import admin
 from .models import Animal, Procedure, Section
+from django.contrib.admin import AdminSite
 
 
 @admin.register(Animal)
@@ -41,3 +42,15 @@ class SectionAdmin(admin.ModelAdmin):
         return obj.animals.count()
 
     animal_count.short_description = 'Количество животных'
+
+class ZooAdminSite(AdminSite):
+    site_header = 'Администрирование зоопарка'
+    site_title = 'Зоопарк'
+    index_title = 'Управление зоопарком'
+
+admin_site = ZooAdminSite(name='zoo_admin')
+
+# Перерегистрируем модели для кастомной админки
+admin_site.register(Animal, AnimalAdmin)
+admin_site.register(Procedure, ProcedureAdmin)
+admin_site.register(Section, SectionAdmin)
