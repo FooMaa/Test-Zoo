@@ -1,0 +1,32 @@
+{% extends 'animals/base.html' %}
+
+{% block title %}Список животных{% endblock %}
+
+{% block content %}
+<h1>Список животных</h1>
+<a href="{% url 'animal-create' %}" class="btn btn-primary mb-3">Добавить животное</a>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Имя</th>
+            <th>Вид</th>
+            <th>Секция</th>
+            <th>Действия</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for animal in animals %}
+        <tr>
+            <td><a href="{% url 'animal-detail' animal.pk %}">{{ animal.name }}</a></td>
+            <td>{{ animal.species }}</td>
+            <td>{{ animal.section|default:"-" }}</td>
+            <td>
+                <a href="{% url 'animal-update' animal.pk %}" class="btn btn-sm btn-warning">Редактировать</a>
+                <a href="{% url 'add-procedure' animal.pk %}" class="btn btn-sm btn-info">Добавить процедуру</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

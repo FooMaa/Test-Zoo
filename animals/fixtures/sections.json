@@ -1,0 +1,26 @@
+[
+    {
+        "model": "animals.section",
+        "pk": 1,
+        "fields": {
+            "name": "Млекопитающие",
+            "description": "Секция для львов, тигров, медведей"
+        }
+    },
+    {
+        "model": "animals.section",
+        "pk": 2,
+        "fields": {
+            "name": "Птицы",
+            "description": "Вольеры с орлами, попугаями и пингвинами"
+        }
+    },
+    {
+        "model": "animals.section",
+        "pk": 3,
+        "fields": {
+            "name": "Рептилии",
+            "description": "Змеи, ящерицы, черепахи"
+        }
+    }
+]

@@ -1,0 +1,50 @@
+{% extends 'animals/base.html' %}
+
+{% block title %}{{ animal.name }} - Детали{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <h2>{{ animal.name }} ({{ animal.species }})</h2>
+    </div>
+    <div class="card-body">
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <p><strong>Секция:</strong> {{ animal.section|default:"Не назначена" }}</p>
+                <p><strong>Дата рождения:</strong> {{ animal.birth_date|default:"Неизвестна" }}</p>
+                <p><strong>Дата поступления:</strong> {{ animal.arrival_date }}</p>
+            </div>
+            <div class="col-md-6 text-end">
+                <a href="{% url 'animal-update' animal.pk %}" class="btn btn-warning">Редактировать</a>
+                <a href="{% url 'add-procedure' animal.pk %}" class="btn btn-primary">Добавить процедуру</a>
+            </div>
+        </div>
+
+        <h3 class="mb-3">История процедур</h3>
+        {% if procedures %}
+        <div class="table-responsive">
+            <table class="table table-bordered">
+                <thead class="table-light">
+                    <tr>
+                        <th>Тип процедуры</th>
+                        <th>Дата и время</th>
+                        <th>Детали</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for procedure in procedures %}
+                    <tr>
+                        <td>{{ procedure.get_procedure_type_display }}</td>
+                        <td>{{ procedure.datetime }}</td>
+                        <td>{{ procedure.details }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="alert alert-info">Нет записей о процедурах</div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
