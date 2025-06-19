@@ -46,7 +46,7 @@ class AnimalDetailView(DetailView):
 #     form_class = AnimalForm
 #     template_name = 'animals/animal_form.html'
 #     success_url = '/'
-# 
+#
 #     def post(self, request, *args, **kwargs):
 #         if 'cancel' in request.POST:
 #             return HttpResponseRedirect('/')
@@ -115,25 +115,92 @@ class AnimalUpdateView(UpdateView):
     success_url = '/'
 
 
+# class ProcedureCreateView(CreateView):
+#     form_class = ProcedureForm
+#     template_name = 'animals/procedure_form.html'
+#
+#     def setup(self, request, *args, **kwargs):
+#         super().setup(request, *args, **kwargs)
+#         self.animal = get_object_or_404(Animal, pk=self.kwargs['pk'])
+#
+#     def get_context_data(self, **kwargs):
+#         context = super().get_context_data(**kwargs)
+#         context['animal'] = self.animal
+#         return context
+#
+#     def form_valid(self, form):
+#         try:
+#             procedure = form.save(commit=False)
+#             procedure.animal = self.animal
+#             if not procedure.datetime:
+#                 procedure.datetime = timezone.now()
+#             procedure.save()
+#             form.save_m2m()
+#             return HttpResponseRedirect(self.get_success_url())
+#         except Exception as e:
+#             return self.form_invalid(form)
+#
+#     def get_success_url(self):
+#         return reverse('animal', kwargs={'pk': self.animal.pk})
+
+@method_decorator(require_http_methods(["GET", "POST"]), name='dispatch')
 class ProcedureCreateView(CreateView):
     form_class = ProcedureForm
     template_name = 'animals/procedure_form.html'
 
+    # Ключ для хранения флага обработки в сессии
+    SESSION_KEY = 'procedure_create_processing_{animal_id}'
+
     def setup(self, request, *args, **kwargs):
         super().setup(request, *args, **kwargs)
         self.animal = get_object_or_404(Animal, pk=self.kwargs['pk'])
+        self.session_key = self.SESSION_KEY.format(animal_id=self.animal.pk)
+
+    def dispatch(self, request, *args, **kwargs):
+        # Проверяем, не выполняется ли уже обработка
+        if request.method == 'POST' and request.session.get(self.session_key):
+            raise PermissionDenied("Дублирующий запрос обнаружен")
+        return super().dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['animal'] = self.animal
         return context
 
+    def post(self, request, *args, **kwargs):
+        # Помечаем запрос как обрабатываемый
+        request.session[self.session_key] = True
+        request.session.modified = True
+
+        try:
+            return super().post(request, *args, **kwargs)
+        finally:
+            # Снимаем флаг обработки
+            if self.session_key in request.session:
+                del request.session[self.session_key]
+                request.session.modified = True
+
     def form_valid(self, form):
         try:
             procedure = form.save(commit=False)
             procedure.animal = self.animal
+
+            # Если время не указано, устанавливаем текущее
             if not procedure.datetime:
                 procedure.datetime = timezone.now()
+
+            # Проверяем на дубликаты перед сохранением
+            duplicate = Procedure.objects.filter(
+                animal=procedure.animal,
+                procedure_type=procedure.procedure_type,
+                datetime=procedure.datetime,
+                details=procedure.details
+            ).exists()
+
+            if duplicate:
+                form.add_error(None, "Такая процедура уже существует")
+                return self.form_invalid(form)
+
             procedure.save()
             form.save_m2m()
             return HttpResponseRedirect(self.get_success_url())
