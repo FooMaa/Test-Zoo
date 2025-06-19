@@ -1,10 +1,8 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic import ListView, DetailView, CreateView, UpdateView
-from rest_framework import viewsets, generics
-from rest_framework.response import Response
+from rest_framework import viewsets, generics, permissions, status
 from django.http import HttpResponseRedirect, JsonResponse
 from django.urls import reverse
-from django.db import transaction
 from django.utils import timezone
 
 from .models import Animal, Procedure
@@ -92,27 +90,55 @@ class ProcedureCreateView(CreateView):
 
 # API views
 class AnimalViewSet(viewsets.ModelViewSet):
-    queryset = Animal.objects.all().select_related('section')
+    queryset = Animal.objects.all()
     serializer_class = AnimalSerializer
+    permission_classes = [permissions.AllowAny]
 
 
-class AnimalProceduresView(generics.ListCreateAPIView):
+class ProcedureViewSet(viewsets.ModelViewSet):
     serializer_class = ProcedureSerializer
+    permission_classes = [permissions.AllowAny]
 
     def get_queryset(self):
-        animal_id = self.kwargs['animal_id']
-        return Procedure.objects.filter(animal_id=animal_id)
+        return Procedure.objects.filter(animal_id=self.kwargs['animal_pk'])
 
     def perform_create(self, serializer):
-        animal_id = self.kwargs['animal_id']
-        serializer.save(animal_id=animal_id)
+        animal = generics.get_object_or_404(Animal, pk=self.kwargs['animal_pk'])
+        serializer.save(animal=animal)
 
-    def list(self, request, *args, **kwargs):
-        queryset = self.get_queryset()
-        serializer = self.get_serializer(queryset, many=True)
-        animal = Animal.objects.get(pk=self.kwargs['animal_id'])
-        animal_data = AnimalSerializer(animal).data
-        return Response({
-            'animal': animal_data,
-            'procedures': serializer.data
-        })
+
+class AnimalListAPIView(generics.ListCreateAPIView):
+    queryset = Animal.objects.all()
+    serializer_class = AnimalSerializer
+    permission_classes = [permissions.AllowAny]
+
+
+class AnimalDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Animal.objects.all()
+    serializer_class = AnimalSerializer
+    permission_classes = [permissions.AllowAny]
+
+
+class ProcedureListCreateAPIView(generics.ListCreateAPIView):
+    serializer_class = ProcedureSerializer
+    permission_classes = [permissions.AllowAny]
+
+    def get_queryset(self):
+        return Procedure.objects.filter(animal_id=self.kwargs['pk'])
+
+    def get_serializer_context(self):
+        context = super().get_serializer_context()
+        context['animal_pk'] = self.kwargs['pk']
+        return context
+
+    def perform_create(self, serializer):
+        serializer.save(animal_id=self.kwargs['pk'])
+
+
+class ProcedureDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
+    serializer_class = ProcedureSerializer
+    permission_classes = [permissions.AllowAny]
+
+    def get_queryset(self):
+        animal_id = self.kwargs['animal_pk']
+        return Procedure.objects.filter(animal_id=animal_id)

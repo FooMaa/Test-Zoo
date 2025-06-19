@@ -26,4 +26,14 @@ class ProcedureSerializer(serializers.ModelSerializer):
     class Meta:
         model = Procedure
         fields = '__all__'
+        extra_kwargs = {
+            'animal': {'required': False}  # Делаем поле необязательным в запросе
+        }
         read_only_fields = ('datetime',)
+
+    def validate(self, data):
+        if 'animal' not in data and 'animal_pk' not in self.context:
+            raise serializers.ValidationError({
+                'animal': 'Animal must be specified either in URL or request data'
+            })
+        return data
