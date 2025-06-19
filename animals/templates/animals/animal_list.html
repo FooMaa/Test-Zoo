@@ -18,7 +18,7 @@
     <tbody>
         {% for animal in animals %}
         <tr>
-            <td><a href="{% url 'animal-detail' animal.pk %}">{{ animal.name }}</a></td>
+            <td><a href="{% url 'animal' animal.pk %}">{{ animal.name }}</a></td>
             <td>{{ animal.species }}</td>
             <td>{{ animal.section|default:"-" }}</td>
             <td>

@@ -29,7 +29,7 @@ class Procedure(models.Model):
     animal = models.ForeignKey(Animal, on_delete=models.CASCADE, related_name='procedures')
     procedure_type = models.CharField(max_length=20, choices=PROCEDURE_TYPES)
     datetime = models.DateTimeField(auto_now_add=True)
-    details = models.JSONField(default=dict)
+    details = models.CharField(max_length=3000)
     
     def __str__(self):
         return f"{self.get_procedure_type_display()} для {self.animal.name}"
