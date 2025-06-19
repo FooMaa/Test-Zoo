@@ -147,8 +147,7 @@ class AnimalUpdateView(UpdateView):
 class ProcedureCreateView(CreateView):
     form_class = ProcedureForm
     template_name = 'animals/procedure_form.html'
-
-    # Ключ для хранения флага обработки в сессии
+    
     SESSION_KEY = 'procedure_create_processing_{animal_id}'
 
     def setup(self, request, *args, **kwargs):
@@ -157,7 +156,6 @@ class ProcedureCreateView(CreateView):
         self.session_key = self.SESSION_KEY.format(animal_id=self.animal.pk)
 
     def dispatch(self, request, *args, **kwargs):
-        # Проверяем, не выполняется ли уже обработка
         if request.method == 'POST' and request.session.get(self.session_key):
             raise PermissionDenied("Дублирующий запрос обнаружен")
         return super().dispatch(request, *args, **kwargs)
@@ -168,14 +166,12 @@ class ProcedureCreateView(CreateView):
         return context
 
     def post(self, request, *args, **kwargs):
-        # Помечаем запрос как обрабатываемый
         request.session[self.session_key] = True
         request.session.modified = True
 
         try:
             return super().post(request, *args, **kwargs)
         finally:
-            # Снимаем флаг обработки
             if self.session_key in request.session:
                 del request.session[self.session_key]
                 request.session.modified = True
@@ -185,11 +181,9 @@ class ProcedureCreateView(CreateView):
             procedure = form.save(commit=False)
             procedure.animal = self.animal
 
-            # Если время не указано, устанавливаем текущее
             if not procedure.datetime:
                 procedure.datetime = timezone.now()
 
-            # Проверяем на дубликаты перед сохранением
             duplicate = Procedure.objects.filter(
                 animal=procedure.animal,
                 procedure_type=procedure.procedure_type,
