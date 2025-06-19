@@ -14,7 +14,7 @@ class AnimalSerializer(serializers.ModelSerializer):
         queryset=Section.objects.all(),
         source='section',
         write_only=True,
-        required=False
+        required=True
     )
 
     class Meta:

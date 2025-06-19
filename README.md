@@ -51,7 +51,8 @@ http GET http://127.0.0.1:8000/api/animals/1/
 http POST http://127.0.0.1:8000/api/animals/ \
     name="Барсик" \
     species="Кошка" \
-    birth_date="2020-01-01"
+    birth_date="2020-01-01" \
+    section_id=1
 
 # Обновить животное
 http PUT http://127.0.0.1:8000/api/animals/1/ \
