@@ -72,4 +72,7 @@ http GET http://127.0.0.1:8000/api/api/animals/2/procedures/
 # Частично обновить животное
 http PATCH http://127.0.0.1:8000/api/animals/1/ \
     name="Новое имя"
+
+# Удалить животное
+http DELETE http://127.0.0.1:8000/api/animals/1/
 ```
