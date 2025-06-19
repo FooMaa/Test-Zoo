@@ -1,4 +1,5 @@
 from django.urls import path, include
+from django.contrib import admin
 from . import views
 
 urlpatterns = [
@@ -7,4 +8,5 @@ urlpatterns = [
     path('create/', views.AnimalCreateView.as_view(), name='animal-create'),
     path('<int:pk>/update/', views.AnimalUpdateView.as_view(), name='animal-update'),
     path('<int:pk>/add_procedure/', views.ProcedureCreateView.as_view(), name='add-procedure'),
+    path('admin/', admin.site.urls),
 ]

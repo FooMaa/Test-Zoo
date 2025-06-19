@@ -29,6 +29,7 @@ sudo docker-compose up -d
 sudo docker-compose exec web python manage.py makemigrations animals
 sudo docker-compose exec web python manage.py migrate
 sudo docker-compose exec web python manage.py loaddata sections.json
+sudo docker-compose exec web python manage.py createsuperuser
 
 #Готово! Проект должен быть доступен по адресу: http://localhost:8000"
 ```
