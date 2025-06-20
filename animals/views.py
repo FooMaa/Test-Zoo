@@ -28,10 +28,7 @@ class AnimalDetailView(DetailView):
     def render_to_response(self, context, **response_kwargs):
         if self.request.accepts('text/html'):
             return super().render_to_response(context, **response_kwargs)
-        return JsonResponse(
-            {'error': 'Use API endpoint for JSON requests'},
-            status=400
-        )
+        return JsonResponse({'error': 'Use API endpoint for JSON requests'}, status=400)
 
 
 class AnimalCreateView(CreateView):
