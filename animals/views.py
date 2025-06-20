@@ -1,8 +1,10 @@
 from django.shortcuts import  get_object_or_404
 from django.views.generic import ListView, DetailView, CreateView, UpdateView
-from django.http import HttpResponseRedirect, JsonResponse
+from django.http import HttpResponseRedirect
 from django.urls import reverse
 from django.utils import timezone
+from django.db import IntegrityError
+from django.core.exceptions import ValidationError
 
 from .models import Animal
 from .forms import AnimalForm, ProcedureForm
@@ -25,11 +27,6 @@ class AnimalDetailView(DetailView):
         context['procedures'] = self.object.procedures.select_related('animal').order_by('-datetime')
         return context
 
-    def render_to_response(self, context, **response_kwargs):
-        if self.request.accepts('text/html'):
-            return super().render_to_response(context, **response_kwargs)
-        return JsonResponse({'error': 'Use API endpoint for JSON requests'}, status=400)
-
 
 class AnimalCreateView(CreateView):
     model = Animal
@@ -40,8 +37,6 @@ class AnimalCreateView(CreateView):
     def post(self, request, *args, **kwargs):
         if 'cancel' in request.POST:
             return HttpResponseRedirect('/')
-        if 'application/json' in request.content_type:
-            return JsonResponse({'error': 'Use the API endpoint at /api/animals/'}, status=400)
         return super().post(request, *args, **kwargs)
 
 
@@ -69,11 +64,15 @@ class ProcedureCreateView(CreateView):
         try:
             procedure = form.save(commit=False)
             procedure.animal = self.animal
+
             if not procedure.datetime:
                 procedure.datetime = timezone.now()
+
             procedure.save()
             form.save_m2m()
             return HttpResponseRedirect(self.get_success_url())
+        except (IntegrityError, ValidationError) as e:
+            return self.form_invalid(form)
         except Exception as e:
             return self.form_invalid(form)
 
