@@ -1,4 +1,4 @@
-name: Django CI with Docker Compose
+name: Django with docker compose
 
 on:
   push:
@@ -14,7 +14,7 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v3
 
-    - name: Set up Docker Compose
+    - name: Install dependencies
       run: |
         sudo apt-get update
         sudo apt-get install -y \
@@ -24,10 +24,12 @@ jobs:
             python3-venv \
             docker-compose
 
+    - name: Set up docker compose
+      run: |
         sudo docker-compose -f docker-compose.yml up -d --build
         sudo docker-compose exec -T web python manage.py migrate
         sudo docker-compose exec -T web python manage.py test
 
-    - name: Tear down
+    - name: Docker compose down
       if: always()
       run: docker-compose down
