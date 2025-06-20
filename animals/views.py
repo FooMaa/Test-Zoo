@@ -1,4 +1,4 @@
-from django.shortcuts import  get_object_or_404
+from django.shortcuts import get_object_or_404
 from django.views.generic import ListView, DetailView, CreateView, UpdateView
 from django.http import HttpResponseRedirect
 from django.urls import reverse
