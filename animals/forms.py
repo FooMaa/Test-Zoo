@@ -1,5 +1,6 @@
-from .models import Animal, Procedure, Section
 from django import forms
+
+from .models import Animal, Procedure, Section
 
 
 class AnimalForm(forms.ModelForm):

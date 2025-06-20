@@ -1,6 +1,7 @@
 from django.contrib import admin
-from .models import Animal, Procedure, Section
 from django.contrib.admin import AdminSite
+
+from .models import Animal, Procedure, Section
 
 
 @admin.register(Animal)

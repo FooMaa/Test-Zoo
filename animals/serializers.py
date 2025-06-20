@@ -1,4 +1,5 @@
 from rest_framework import serializers
+
 from .models import Animal, Section, Procedure
 
 
@@ -9,7 +10,6 @@ class SectionSerializer(serializers.ModelSerializer):
 
 
 class AnimalSerializer(serializers.ModelSerializer):
-    section = SectionSerializer(read_only=True)
     section_id = serializers.PrimaryKeyRelatedField(
         queryset=Section.objects.all(),
         source='section',
@@ -20,6 +20,14 @@ class AnimalSerializer(serializers.ModelSerializer):
     class Meta:
         model = Animal
         fields = '__all__'
+
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        representation['section'] = {
+            'id': instance.section.id,
+            'name': instance.section.name,
+        }
+        return representation
 
 
 class ProcedureSerializer(serializers.ModelSerializer):

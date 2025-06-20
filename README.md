@@ -63,12 +63,12 @@ http PUT http://127.0.0.1:8000/api/animals/1/ \
     section_id=1
 
 # Добавить процедуру
-http POST http://127.0.0.1:8000/api/api/animals/2/procedures/ \
+http POST http://127.0.0.1:8000/api/animals/2/procedures/ \
    procedure_type="WEIGHT" \
    details="Годовая прививка"
 
 # Получить процедуры у животного
-http GET http://127.0.0.1:8000/api/api/animals/2/procedures/
+http GET http://127.0.0.1:8000/api/animals/2/procedures/
 
 # Частично обновить животное
 http PATCH http://127.0.0.1:8000/api/animals/1/ \

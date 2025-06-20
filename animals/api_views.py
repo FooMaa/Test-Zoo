@@ -57,4 +57,3 @@ class ProcedureDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
     def get_queryset(self):
         animal_id = self.kwargs['animal_pk']
         return Procedure.objects.filter(animal_id=animal_id)
-    
