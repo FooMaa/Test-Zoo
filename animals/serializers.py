@@ -27,7 +27,7 @@ class ProcedureSerializer(serializers.ModelSerializer):
         model = Procedure
         fields = '__all__'
         extra_kwargs = {
-            'animal': {'required': False}  # Делаем поле необязательным в запросе
+            'animal': {'required': False}
         }
         read_only_fields = ('datetime',)
 

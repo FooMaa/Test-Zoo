@@ -1,4 +1,4 @@
-from django.urls import path, include
+from django.urls import path
 from .admin import admin_site
 from . import views
 

@@ -43,14 +43,15 @@ class SectionAdmin(admin.ModelAdmin):
 
     animal_count.short_description = 'Количество животных'
 
+
 class ZooAdminSite(AdminSite):
     site_header = 'Администрирование зоопарка'
     site_title = 'Зоопарк'
     index_title = 'Управление зоопарком'
 
+
 admin_site = ZooAdminSite(name='zoo_admin')
 
-# Перерегистрируем модели для кастомной админки
 admin_site.register(Animal, AnimalAdmin)
 admin_site.register(Procedure, ProcedureAdmin)
 admin_site.register(Section, SectionAdmin)

@@ -1,17 +1,18 @@
-from django.shortcuts import render, redirect, get_object_or_404
+from django.shortcuts import  get_object_or_404
 from django.views.generic import ListView, DetailView, CreateView, UpdateView
-from rest_framework import viewsets, generics, permissions, status
 from django.http import HttpResponseRedirect, JsonResponse
 from django.urls import reverse
 from django.utils import timezone
+from django.views.decorators.http import require_http_methods
+from django.utils.decorators import method_decorator
+from django.core.exceptions import PermissionDenied
+
+from rest_framework import viewsets, generics, permissions
 
 from .models import Animal, Procedure
 from .forms import AnimalForm, ProcedureForm
 from .serializers import AnimalSerializer, ProcedureSerializer
 
-from django.views.decorators.http import require_http_methods
-from django.utils.decorators import method_decorator
-from django.core.exceptions import PermissionDenied
 
 
 # Web views

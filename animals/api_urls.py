@@ -11,6 +11,5 @@ urlpatterns = [
     path('api/animals/', views.AnimalListAPIView.as_view(), name='api_animal_list'),
     path('api/animals/<int:pk>/', views.AnimalDetailAPIView.as_view(), name='api_animal_detail'),
     path('api/animals/<int:pk>/procedures/', views.ProcedureListCreateAPIView.as_view(), name='api_procedure_list'),
-    path('api/animals/<int:animal_pk>/procedures/<int:pk>/', views.ProcedureDetailAPIView.as_view(),
-         name='api_procedure_detail'),
+    path('api/animals/<int:animal_pk>/procedures/<int:pk>/', views.ProcedureDetailAPIView.as_view(), name='api_procedure_detail'),
 ]
