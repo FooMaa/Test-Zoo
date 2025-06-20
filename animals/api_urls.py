@@ -1,15 +1,15 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from . import views
+from . import api_views
 
 
 router = DefaultRouter()
-router.register(r'animals', views.AnimalViewSet, basename='animal')
+router.register(r'animals', api_views.AnimalViewSet, basename='animal')
 
 urlpatterns = [
     path('', include(router.urls)),
-    path('api/animals/', views.AnimalListAPIView.as_view(), name='api_animal_list'),
-    path('api/animals/<int:pk>/', views.AnimalDetailAPIView.as_view(), name='api_animal_detail'),
-    path('api/animals/<int:pk>/procedures/', views.ProcedureListCreateAPIView.as_view(), name='api_procedure_list'),
-    path('api/animals/<int:animal_pk>/procedures/<int:pk>/', views.ProcedureDetailAPIView.as_view(), name='api_procedure_detail'),
+    path('api/animals/', api_views.AnimalListAPIView.as_view(), name='api_animal_list'),
+    path('api/animals/<int:pk>/', api_views.AnimalDetailAPIView.as_view(), name='api_animal_detail'),
+    path('api/animals/<int:pk>/procedures/', api_views.ProcedureListCreateAPIView.as_view(), name='api_procedure_list'),
+    path('api/animals/<int:animal_pk>/procedures/<int:pk>/', api_views.ProcedureDetailAPIView.as_view(), name='api_procedure_detail'),
 ]
