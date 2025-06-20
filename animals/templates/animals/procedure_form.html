@@ -18,10 +18,29 @@
                 <label class="form-label">Детали процедуры</label>
                 {{ form.details }}
             </div>
+
             <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                <button type="submit" class="btn btn-primary">Добавить</button>
+                <button type="submit" id="add-btn" class="btn btn-primary">Добавить</button>
                 <a href="/" class="btn btn-secondary">Отмена</a>
             </div>
+
+            <script>
+                window.addEventListener('pageshow', function(event) {
+                    const addBtn = document.getElementById('add-btn');
+                    if (addBtn) {
+                        addBtn.disabled = false;
+                        addBtn.innerHTML = 'Добавить';
+                    }
+                });
+
+                document.querySelector('form').addEventListener('submit', function(e) {
+                    if (e.submitter && e.submitter.id === 'add-btn') {
+                        const addBtn = document.getElementById('add-btn');
+                        addBtn.disabled = true;
+                        addBtn.innerHTML = `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>Добавление...`;
+                    }
+                });
+            </script>
         </form>
     </div>
 </div>

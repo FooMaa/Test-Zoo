@@ -32,8 +32,25 @@
         
         <div class="d-grid gap-2 d-md-flex justify-content-md-end">
             <button type="submit" name="cancel" class="btn btn-secondary">Отмена</button>
-            <button type="submit" class="btn btn-primary">Сохранить</button>
+            <button type="submit" id="save-btn" class="btn btn-primary">Сохранить</button>
         </div>
+        <script>
+            window.addEventListener('pageshow', function(event) {
+                const addBtn = document.getElementById('save-btn');
+                if (addBtn) {
+                    addBtn.disabled = false;
+                    addBtn.innerHTML = 'Сохранить';
+                }
+            });
+
+            document.querySelector('form').addEventListener('submit', function(e) {
+                if (e.submitter && e.submitter.name !== 'cancel') {
+                    const saveBtn = document.getElementById('save-btn');
+                    saveBtn.disabled = true;
+                    saveBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Сохранение...';
+                }
+            });
+        </script>
     </form>
 </div>
 {% endblock %}
