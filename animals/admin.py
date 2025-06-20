@@ -1,6 +1,6 @@
 from django.contrib import admin
-from django.contrib.admin import AdminSite
 
+from zoo.admin import admin_site
 from .models import Animal, Procedure, Section
 
 
@@ -44,14 +44,6 @@ class SectionAdmin(admin.ModelAdmin):
 
     animal_count.short_description = 'Количество животных'
 
-
-class ZooAdminSite(AdminSite):
-    site_header = 'Администрирование зоопарка'
-    site_title = 'Зоопарк'
-    index_title = 'Управление зоопарком'
-
-
-admin_site = ZooAdminSite(name='zoo_admin')
 
 admin_site.register(Animal, AnimalAdmin)
 admin_site.register(Procedure, ProcedureAdmin)

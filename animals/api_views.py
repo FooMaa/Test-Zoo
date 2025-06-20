@@ -21,10 +21,10 @@ class ProcedureViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.AllowAny]
 
     def get_queryset(self):
-        return Procedure.objects.filter(animal_id=self.kwargs['animal_pk'])
+        return Procedure.objects.filter(animal_id=self.kwargs['pk'])
 
     def perform_create(self, serializer):
-        animal = generics.get_object_or_404(Animal, pk=self.kwargs['animal_pk'])
+        animal = generics.get_object_or_404(Animal, pk=self.kwargs['pk'])
         serializer.save(animal=animal)
 
 
@@ -70,17 +70,8 @@ class ProcedureListCreateAPIView(generics.ListCreateAPIView):
 
     def get_serializer_context(self):
         context = super().get_serializer_context()
-        context['animal_pk'] = self.kwargs['pk']
+        context['pk'] = self.kwargs['pk']
         return context
 
     def perform_create(self, serializer):
         serializer.save(animal_id=self.kwargs['pk'])
-
-
-class ProcedureDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
-    serializer_class = ProcedureSerializer
-    permission_classes = [permissions.AllowAny]
-
-    def get_queryset(self):
-        animal_id = self.kwargs['animal_pk']
-        return Procedure.objects.filter(animal_id=animal_id)

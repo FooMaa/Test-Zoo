@@ -40,7 +40,7 @@ class ProcedureSerializer(serializers.ModelSerializer):
         read_only_fields = ('datetime',)
 
     def validate(self, data):
-        if 'animal' not in data and 'animal_pk' not in self.context:
+        if 'animal' not in data and 'pk' not in self.context:
             raise serializers.ValidationError({
                 'animal': 'Animal must be specified either in URL or request data'
             })

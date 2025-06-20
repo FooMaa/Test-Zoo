@@ -199,3 +199,12 @@ class ProcedureCreateView(CreateView):
 
     def get_success_url(self):
         return reverse('animal', kwargs={'pk': self.animal.pk})
+
+# Api
+# class ProcedureDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
+#     serializer_class = ProcedureSerializer
+#     permission_classes = [permissions.AllowAny]
+#
+#     def get_queryset(self):
+#         animal_id = self.kwargs['animal_pk']
+#         return Procedure.objects.filter(animal_id=animal_id)
