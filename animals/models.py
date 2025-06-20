@@ -9,6 +9,7 @@ class Section(models.Model):
     def __str__(self):
         return self.name
 
+
 class Animal(models.Model):
     name = models.CharField(max_length=100)
     species = models.CharField(max_length=100)
@@ -19,11 +20,13 @@ class Animal(models.Model):
     def __str__(self):
         return f"{self.name} ({self.species})"
 
+
 PROCEDURE_TYPES = [
     ('FEEDING', 'Кормление'),
     ('WEIGHT', 'Взвешивание'),
     ('VET', 'Ветеринарный осмотр'),
 ]
+
 
 class Procedure(models.Model):
     animal = models.ForeignKey(Animal, on_delete=models.CASCADE, related_name='procedures')
