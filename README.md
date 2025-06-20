@@ -65,7 +65,7 @@ http PUT http://127.0.0.1:8000/api/animals/1/ \
 # Добавить процедуру
 http POST http://127.0.0.1:8000/api/animals/2/procedures/ \
    procedure_type="WEIGHT" \
-   details="Годовая прививка"
+   details="25.0 kg"
 
 # Получить процедуры у животного
 http GET http://127.0.0.1:8000/api/animals/2/procedures/
