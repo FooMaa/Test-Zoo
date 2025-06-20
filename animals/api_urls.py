@@ -9,8 +9,6 @@ router.register(r'animals', api_views.AnimalViewSet, basename='animal')
 
 urlpatterns = [
     path('', include(router.urls)),
-    path('animals/', api_views.AnimalListAPIView.as_view(), name='api_animal_list'),
-    path('animals/<int:pk>/', api_views.AnimalDetailAPIView.as_view(), name='api_animal_detail'),
     path('animals/<int:pk>/procedures/', api_views.ProcedureListCreateAPIView.as_view(), name='api_procedure_list'),
     path('animals/<int:animal_pk>/procedures/<int:pk>/', api_views.ProcedureDetailAPIView.as_view(), name='api_procedure_detail'),
 ]
